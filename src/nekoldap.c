@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <ctype.h>
 #include <neko.h>
 
@@ -23,17 +24,18 @@ value nekoldap_connect(value uri) {
 	LDAP *ldap;
 	int rc;
 
+	int protocol_version = 3;
+	int referrals = 0;
+	int debug_level = 2147483647;
+	ldap_set_option(NULL, LDAP_OPT_PROTOCOL_VERSION, &protocol_version);
+	ldap_set_option(NULL, LDAP_OPT_REFERRALS, &referrals);
+	ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, &debug_level);
+
 	val_check(uri, string);
 	rc = ldap_initialize(&ldap, val_string(uri));
 	if (rc != LDAP_SUCCESS) {
 		val_throw(alloc_int(rc));
 	} else {
-		int protocol_version = 3;
-		int referrals = 0;
-		int debug_level = 1;
-		ldap_set_option(ldap, LDAP_OPT_PROTOCOL_VERSION, &protocol_version);
-		ldap_set_option(ldap, LDAP_OPT_REFERRALS, &referrals);
-		ldap_set_option(ldap, LDAP_OPT_DEBUG_LEVEL, &debug_level);
 		return alloc_abstract(k_ldap_pointer, ldap);
 	}
 }
@@ -177,9 +179,80 @@ value nekoldap_err2string(value result) {
 	return alloc_string(ldap_err2string(val_int(result)));
 }
 
+void getModificationsCountFromNekoObject(value v, field f, void * count) {
+	(*(int *)count)++;
+}
+
+typedef struct _AttributesGetLdapModificationsFromNekoObject {
+	int i;
+	int operation;
+	LDAPMod ** mods;
+} AttributesGetLdapModificationsFromNekoObject;
+
+void getLdapModificationsFromNekoObject(value v, field f, void * p) {
+	AttributesGetLdapModificationsFromNekoObject * attrs = (AttributesGetLdapModificationsFromNekoObject *) p;
+
+	val_check(v, string);
+	printf("%s = %s\n", val_string(val_field_name(f)), val_string(v));
+
+	attrs->mods[attrs->i] = (LDAPMod *)malloc(sizeof(LDAPMod));
+	attrs->mods[attrs->i]->mod_op = attrs->operation | LDAP_MOD_BVALUES;
+	attrs->mods[attrs->i]->mod_type = strdup(val_string(val_field_name(f)));
+	printf("mods[%d]->mod_type=%s\n", attrs->i, attrs->mods[attrs->i]->mod_type);
+
+	if (val_is_string(v)) {
+		attrs->mods[attrs->i]->mod_bvalues = (struct berval **) malloc (2*sizeof(struct berval *));
+		attrs->mods[attrs->i]->mod_bvalues[0] = (struct berval *) malloc (sizeof(struct berval));
+		attrs->mods[attrs->i]->mod_bvalues[0]->bv_len = strlen(val_string(v));
+		attrs->mods[attrs->i]->mod_bvalues[0]->bv_val = strdup(val_string(v));
+		attrs->mods[attrs->i]->mod_bvalues[1] = NULL;
+		printf("berval: len=%d val=%s\n", attrs->mods[attrs->i]->mod_bvalues[0]->bv_len, attrs->mods[attrs->i]->mod_bvalues[0]->bv_val);
+	} else if (val_is_array(v)) {
+		failure("Array values not implemented.");
+	}
+	attrs->i++;
+}
+
+
+value nekoldap_modify(value neko_ldap, value neko_dn, value neko_mods, value neko_operation) {
+	val_check_kind(neko_ldap, k_ldap_pointer);
+	val_check(neko_dn, string);
+
+	val_check(neko_operation, int);
+	char * operation = val_int(neko_operation);
+
+	val_check(neko_mods, object);
+
+	int modifications_count = 0;
+
+	val_iter_fields(neko_mods, getModificationsCountFromNekoObject, (void *)&modifications_count);
+
+	printf("count = %d\n", modifications_count);
+
+	AttributesGetLdapModificationsFromNekoObject attrs;
+	attrs.mods = malloc((modifications_count+1)*sizeof(LDAPMod *));
+	memset(attrs.mods, 0, sizeof(LDAPMod *)*(modifications_count+1));
+	attrs.i = 0;
+	attrs.operation = operation;
+
+	val_iter_fields(neko_mods, getLdapModificationsFromNekoObject, (void *)&attrs);
+	attrs.mods[modifications_count] = NULL;
+
+	int rc = 0;
+	if ((rc = ldap_modify_s(val_data(neko_ldap), val_string(neko_dn), attrs.mods)) != LDAP_SUCCESS) {
+		val_throw(alloc_int(rc));
+		return val_false;
+	} else {
+		return val_true;
+	}
+
+}
+
+
 DEFINE_PRIM(nekoldap_connect, 1);
 DEFINE_PRIM(nekoldap_bind, 3);
 DEFINE_PRIM(nekoldap_unbind, 1);
 DEFINE_PRIM_MULT(nekoldap_search);
 DEFINE_PRIM(nekoldap_get_entries, 2);
 DEFINE_PRIM(nekoldap_err2string, 1);
+DEFINE_PRIM(nekoldap_modify, 4);
