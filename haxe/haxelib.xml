@@ -1,0 +1,5 @@
+<project name="nekoldap" url="http://code.google.com/p/neko-ldap/" license="GPL">
+    <user name="grebenshikov.n"/>
+    <description>Neko and haxe wrapper for OpenLDAP library</description>
+    <version name="0.0.1">Initial alpha, strict functionality, not really tested</version>
+</project>

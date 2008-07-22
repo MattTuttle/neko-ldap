@@ -27,9 +27,11 @@ value nekoldap_connect(value uri) {
 	int protocol_version = 3;
 	int referrals = 0;
 	int debug_level = 2147483647;
+	int timeout = 2;
 	ldap_set_option(NULL, LDAP_OPT_PROTOCOL_VERSION, &protocol_version);
 	ldap_set_option(NULL, LDAP_OPT_REFERRALS, &referrals);
 	ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, &debug_level);
+	ldap_set_option(NULL, LDAP_OPT_NETWORK_TIMEOUT, &timeout);
 
 	val_check(uri, string);
 	rc = ldap_initialize(&ldap, val_string(uri));

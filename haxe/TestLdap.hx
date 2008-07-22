@@ -1,4 +1,4 @@
-﻿import ldap.Ldap;
+﻿import nekoldap.Ldap;
 
 class TestLdap {
     static function main() {

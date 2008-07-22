@@ -1,3 +1,5 @@
+MKDIR := mkdir -p
+COPY := cp -u
 RM := rm -rf
 
 # All of the sources participating in the build are defined here
@@ -14,7 +16,7 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: nekoldap.ndll
+all: nekoldap.ndll haxelib
 
 # Tool invocations
 nekoldap.ndll: $(OBJS)
@@ -29,5 +31,15 @@ clean:
 	-$(RM) $(OBJS)$(C_DEPS)$(LIBRARIES) build/nekoldap.ndll
 	-@echo ' '
 
+
+haxelib: nekoldap.ndll
+	@echo 'Building target: $@'
+	$(MKDIR) build/haxelib/nekoldap
+	$(MKDIR) build/haxelib/ndll/Windows
+	$(COPY) haxe/nekoldap/Ldap.hx build/haxelib/nekoldap/Ldap.hx
+	$(COPY) haxe/haxelib.xml build/haxelib/haxelib.xml
+	$(COPY) build/nekoldap.ndll build/haxelib/ndll/Windows/nekoldap.ndll
+	@echo 'Finished building target: $@'
+	@echo ' '
 .PHONY: all clean dependents
 .SECONDARY:
