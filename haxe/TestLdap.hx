@@ -3,6 +3,12 @@
 class TestLdap {
     static function main() {
 		var ldap = new Ldap("ldaps://lena.qwe.local");
+		
+		ldap.setOption(Ldap.OPT_PROTOCOL_VERSION, 3);
+		ldap.setOption(Ldap.OPT_REFERRALS, 0);
+		ldap.setOption(Ldap.OPT_DEBUG_LEVEL, 2147483647);
+		ldap.setOption(Ldap.OPT_NETWORK_TIMEOUT, { sec:1, usec:0 } );
+		
 //		ldap.bind("ivan@qwe.local", "~123qweasd");
 		ldap.bind("kg@qwe.local", "");
 		var result = ldap.search("cn=users,dc=qwe,dc=local", 2, "(&(objectclass=user)(samaccountname=ivan))", ["name", "userprincipalname", "distinguishedname", "samaccountname"]);

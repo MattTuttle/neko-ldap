@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/time.h>
 #include <neko.h>
 
 #define LDAP_DEPRECATED 1
@@ -24,15 +25,6 @@ value nekoldap_connect(value uri) {
 	LDAP *ldap;
 	int rc;
 
-	int protocol_version = 3;
-	int referrals = 0;
-	int debug_level = 2147483647;
-	int timeout = 2;
-	ldap_set_option(NULL, LDAP_OPT_PROTOCOL_VERSION, &protocol_version);
-	ldap_set_option(NULL, LDAP_OPT_REFERRALS, &referrals);
-	ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, &debug_level);
-	ldap_set_option(NULL, LDAP_OPT_NETWORK_TIMEOUT, &timeout);
-
 	val_check(uri, string);
 	rc = ldap_initialize(&ldap, val_string(uri));
 	if (rc != LDAP_SUCCESS) {
@@ -42,8 +34,41 @@ value nekoldap_connect(value uri) {
 	}
 }
 
-value nekoldap_set_option(value ldap, value option, value newval) {
-	failure("Not implemented");
+value nekoldap_set_option(value neko_ldap, value neko_option, value neko_newval) {
+	int result;
+	LDAP * ldap;
+	int option;
+	int newval;
+
+	if (val_is_kind(neko_ldap, k_ldap_pointer)) {
+		ldap = val_data(neko_ldap);
+	} else {
+		ldap = NULL;
+	}
+	val_check(neko_option, int);
+	option = val_int(neko_option);
+
+	switch (option) {
+		case LDAP_OPT_PROTOCOL_VERSION:
+		case LDAP_OPT_REFERRALS:
+		case LDAP_OPT_DEBUG_LEVEL:
+			if (! val_is_int(neko_newval)) break;
+			newval = val_int(neko_newval);
+			result = ldap_set_option(ldap, option, &newval);
+			break;
+		case LDAP_OPT_NETWORK_TIMEOUT:
+			if (! val_is_object(neko_newval)) break;
+			struct timeval tv;
+			tv.tv_sec = val_int(val_field(neko_newval,val_id("sec")));
+			tv.tv_usec = val_int(val_field(neko_newval,val_id("usec")));
+			result = ldap_set_option(ldap, option, &tv);
+			break;
+		default:
+			result = LDAP_OPT_ERROR;
+			break;
+	}
+
+	return alloc_int(result);
 }
 
 value nekoldap_bind(value ldap, value dn, value password) {
@@ -258,3 +283,4 @@ DEFINE_PRIM_MULT(nekoldap_search);
 DEFINE_PRIM(nekoldap_get_entries, 2);
 DEFINE_PRIM(nekoldap_err2string, 1);
 DEFINE_PRIM(nekoldap_modify, 4);
+DEFINE_PRIM(nekoldap_set_option, 3);
