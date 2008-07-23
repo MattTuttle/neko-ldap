@@ -22,45 +22,80 @@ class Ldap {
 	
 	private var uri: String;
 	private var connection: Dynamic;
+	private var connected: Bool;
 	
 	public function new(uri: String) {
+		connected = false;
 		connection = null;
 		this.uri = uri;
 	}
 	
+	public function isConnected() {
+		return connected;
+	}
+	
 	public function setOption(option: Int, value: Dynamic): Bool {
-		return nekoldap_set_option(connection, neko.Lib.haxeToNeko(option), neko.Lib.haxeToNeko(value));
+		try {
+			return nekoldap_set_option(connection, neko.Lib.haxeToNeko(option), neko.Lib.haxeToNeko(value));
+		} catch (e: Int) {
+			throw new LdapException(e, nekoldap_err2string(e));
+			return false;
+		}
 	}
 
 	public function bind(dn: String, password: String): Bool {
-		connection = nekoldap_connect(neko.Lib.haxeToNeko(uri));
-		return nekoldap_bind(connection, neko.Lib.haxeToNeko(dn), neko.Lib.haxeToNeko(password));
+		try {
+			connection = nekoldap_connect(neko.Lib.haxeToNeko(uri));
+			nekoldap_bind(connection, neko.Lib.haxeToNeko(dn), neko.Lib.haxeToNeko(password));
+			connected = true;
+			return true;
+		} catch (e: Int) {
+			connected = false;
+			throw new LdapException(e, nekoldap_err2string(e));
+			return false;
+		}
 	}
 	
 	public function unbind(): Bool {
-		return nekoldap_unbind(connection);
+		try {
+			connected = false;
+			return nekoldap_unbind(connection);
+		} catch (e: Int) {
+			throw new LdapException(e, nekoldap_err2string(e));
+			return false;
+		}
 	}
 	
 
 	public function search(baseDN: String, scope: Int, filter: String, attributes: Array<String>): Dynamic {
-		return nekoldap_search(
-			connection, 
-			neko.Lib.haxeToNeko(baseDN), 
-			scope, 
-			neko.Lib.haxeToNeko(filter), 
-			neko.Lib.haxeToNeko(attributes), 
-			0);
+		try {
+			return nekoldap_search(
+				connection, 
+				neko.Lib.haxeToNeko(baseDN), 
+				scope, 
+				neko.Lib.haxeToNeko(filter), 
+				neko.Lib.haxeToNeko(attributes), 
+				0);
+		} catch (e: Int) {
+			throw new LdapException(e, nekoldap_err2string(e));
+			return false;
+		}
 	}
 	
 	public function getEntries(result: Dynamic): Dynamic {
-		return nekoldap_get_entries(connection, result);
+		try {
+			return nekoldap_get_entries(connection, result);
+		} catch (e: Int) {
+			throw new LdapException(e, nekoldap_err2string(e));
+			return false;
+		}
 	}
 
 	public function modify(dn: String, modifications: Dynamic) {
 		try {
 			return nekoldap_modify(connection, neko.Lib.haxeToNeko(dn), neko.Lib.haxeToNeko(modifications), MOD_REPLACE);
 		} catch (e: Int) {
-			trace(nekoldap_err2string(e));
+			throw new LdapException(e, nekoldap_err2string(e));
 			return false;
 		}
 	}

@@ -6,7 +6,7 @@ class TestLdap {
 		
 		ldap.setOption(Ldap.OPT_PROTOCOL_VERSION, 3);
 		ldap.setOption(Ldap.OPT_REFERRALS, 0);
-		ldap.setOption(Ldap.OPT_DEBUG_LEVEL, 2147483647);
+//		ldap.setOption(Ldap.OPT_DEBUG_LEVEL, 2147483647);
 		ldap.setOption(Ldap.OPT_NETWORK_TIMEOUT, { sec:1, usec:0 } );
 		
 //		ldap.bind("ivan@qwe.local", "~123qweasd");

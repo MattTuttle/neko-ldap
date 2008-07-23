@@ -37,6 +37,7 @@ haxelib: nekoldap.ndll
 	$(MKDIR) build/haxelib/nekoldap
 	$(MKDIR) build/haxelib/ndll/Windows
 	$(COPY) haxe/nekoldap/Ldap.hx build/haxelib/nekoldap/Ldap.hx
+	$(COPY) haxe/nekoldap/LdapException.hx build/haxelib/nekoldap/LdapException.hx
 	$(COPY) haxe/haxelib.xml build/haxelib/haxelib.xml
 	$(COPY) build/nekoldap.ndll build/haxelib/ndll/Windows/nekoldap.ndll
 	@echo 'Finished building target: $@'
