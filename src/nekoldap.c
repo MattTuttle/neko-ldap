@@ -161,11 +161,11 @@ value nekoldap_get_entries(value neko_ldap, value neko_ldap_result) {
 	num_entries = ldap_count_entries(ldap, ldap_result);
 	neko_result = alloc_array(num_entries);
 
-	if (num_entries == 0) return val_false;
+	if (num_entries == 0) return val_null;
 	num_entries = 0;
 
 	ldap_result_entry = ldap_first_entry(ldap, ldap_result);
-	if (ldap_result_entry == NULL) return val_false;
+	if (ldap_result_entry == NULL) return val_null;
 
 	while (ldap_result_entry != NULL) {
 

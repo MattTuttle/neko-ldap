@@ -10,15 +10,22 @@ class Ldap {
 	public static var MOD_INCREMENT = 3;
 	public static var MOD_BVALUES = 128;
 	
-	public static var CONNST_NULL = 0;
-	public static var CONNST_NEEDSOCKET = 1;
-	public static var CONNST_CONNECTING = 2;
-	public static var CONNST_CONNECTED = 3;
 
 	public static var OPT_PROTOCOL_VERSION = 0x0011;
 	public static var OPT_REFERRALS = 0x0008;
 	public static var OPT_DEBUG_LEVEL = 0x5001;	/* debug level */
 	public static var OPT_NETWORK_TIMEOUT = 0x5005;	/* socket level timeout */
+	
+	public static var SCOPE_BASE = 0x0000;
+	public static var SCOPE_BASEOBJECT = SCOPE_BASE;
+	public static var SCOPE_ONELEVEL = 0x0001;
+	public static var SCOPE_ONE = SCOPE_ONELEVEL;
+	public static var SCOPE_SUBTREE = 0x0002;
+	public static var SCOPE_SUB = SCOPE_SUBTREE;
+	public static var SCOPE_SUBORDINATE = 0x0003; /* OpenLDAP extension */
+	public static var SCOPE_CHILDREN = SCOPE_SUBORDINATE;
+	public static var SCOPE_DEFAULT = -1; /* OpenLDAP extension */
+
 	
 	private var uri: String;
 	private var connection: Dynamic;
@@ -44,7 +51,7 @@ class Ldap {
 	}
 
 	public function bind(dn: String, password: String): Bool {
-		try {
+		try {	
 			connection = nekoldap_connect(neko.Lib.haxeToNeko(uri));
 			nekoldap_bind(connection, neko.Lib.haxeToNeko(dn), neko.Lib.haxeToNeko(password));
 			connected = true;
@@ -82,12 +89,11 @@ class Ldap {
 		}
 	}
 	
-	public function getEntries(result: Dynamic): Dynamic {
+	public function getEntries(result: Dynamic) {
 		try {
 			return nekoldap_get_entries(connection, result);
 		} catch (e: Int) {
 			throw new LdapException(e, nekoldap_err2string(e));
-			return false;
 		}
 	}
 
@@ -96,7 +102,6 @@ class Ldap {
 			return nekoldap_modify(connection, neko.Lib.haxeToNeko(dn), neko.Lib.haxeToNeko(modifications), MOD_REPLACE);
 		} catch (e: Int) {
 			throw new LdapException(e, nekoldap_err2string(e));
-			return false;
 		}
 	}
 	
