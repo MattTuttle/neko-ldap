@@ -33,6 +33,7 @@ if test "$ac_cv_mingw32" != yes ; then
   		AC_MSG_ERROR([Precompiled libraries are allowed only with MinGW32])
  	fi
 else
+	HAXE_OS=Windows
 	HAXE_LIB_NAME=../nekoldap.ndll
 fi
 

@@ -19342,8 +19342,13 @@ HAXELIB_LIB_NAME=nekoldap.ndll
 
 
 if test "$ac_cv_mingw32" != yes ; then
-QWE=
+  	if test "$builtin_libraries" = yes; then
+  		{ { echo "$as_me:$LINENO: error: Precompiled libraries are allowed only with MinGW32" >&5
+echo "$as_me: error: Precompiled libraries are allowed only with MinGW32" >&2;}
+   { (exit 1); exit 1; }; }
+ 	fi
 else
+	HAXE_OS=Windows
 	HAXE_LIB_NAME=../nekoldap.ndll
 fi
 
