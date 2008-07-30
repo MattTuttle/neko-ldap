@@ -19,11 +19,22 @@ dnl AC_PROG_CC
 dnl AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
-dnl if test "$ac_cv_mingw32" != yes ; then
-dnl 	if test "$builtin_libraries" = yes; then
-dnl 		AC_MSG_ERROR([Precompiled libraries are allowed only with MinGW32])
-dnl 	fi
-dnl fi
+
+HAXE_OS=Linux
+HAXE_LIB_NAME=.libs/libnekoldap.so
+HAXELIB_LIB_NAME=nekoldap.ndll
+
+AC_SUBST(HAXE_OS)
+AC_SUBST(HAXE_LIB_NAME)
+AC_SUBST(HAXELIB_LIB_NAME)
+
+if test "$ac_cv_mingw32" != yes ; then
+  	if test "$builtin_libraries" = yes; then
+  		AC_MSG_ERROR([Precompiled libraries are allowed only with MinGW32])
+ 	fi
+else
+	HAXE_LIB_NAME=../nekoldap.ndll
+fi
 
 dnl ------------------------------------------------------------------------
 dnl HEADERS ----------------------------------------------------------------
@@ -48,7 +59,10 @@ dnl ----------------------------------------------------------------
 
 
 
+AM_CONDITIONAL([BUILTIN_LIBRARIES], [test "$builtin_libraries" = yes])
+
 if test "$builtin_libraries" = yes; then
+	
 	AC_SUBST(STATIC_LIB_REGEX, ["\$(top_srcdir)/lib/libregex.a"])
 	AC_SUBST(STATIC_LIB_CRYPTO, ["\$(top_srcdir)/lib/libcrypto.a"])
 	AC_SUBST(STATIC_LIB_SSL, ["\$(top_srcdir)/lib/libssl.a"])
@@ -109,6 +123,4 @@ fi
 
 AC_SEARCH_LIBS([neko_alloc], [neko], [], AC_MSG_ERROR([This package needs neko library]))
 
-
-
-AC_OUTPUT([Makefile src/Makefile lib/Makefile])
+AC_OUTPUT([Makefile src/Makefile])

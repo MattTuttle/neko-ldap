@@ -49,9 +49,15 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libnekoldap_la_DEPENDENCIES =
-am_libnekoldap_la_OBJECTS = nekoldap.lo
+libnekoldap_la_LIBADD =
+am__libnekoldap_la_SOURCES_DIST = nekoldap.c
+@BUILTIN_LIBRARIES_FALSE@am_libnekoldap_la_OBJECTS =  \
+@BUILTIN_LIBRARIES_FALSE@	libnekoldap_la-nekoldap.lo
 libnekoldap_la_OBJECTS = $(am_libnekoldap_la_OBJECTS)
+libnekoldap_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libnekoldap_la_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+@BUILTIN_LIBRARIES_FALSE@am_libnekoldap_la_rpath = -rpath $(libdir)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -65,7 +71,7 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libnekoldap_la_SOURCES)
-DIST_SOURCES = $(libnekoldap_la_SOURCES)
+DIST_SOURCES = $(am__libnekoldap_la_SOURCES_DIST)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -97,6 +103,9 @@ EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
 GREP = @GREP@
+HAXELIB_LIB_NAME = @HAXELIB_LIB_NAME@
+HAXE_LIB_NAME = @HAXE_LIB_NAME@
+HAXE_OS = @HAXE_OS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -180,9 +189,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-lib_LTLIBRARIES = libnekoldap.la
-libnekoldap_la_LIBADD = @STATIC_LIB_LDAP@ @STATIC_LIB_LBER@ @STATIC_LIB_SSL@ @STATIC_LIB_CRYPTO@ @STATIC_LIB_REGEX@ 
-libnekoldap_la_SOURCES = nekoldap.c
+@BUILTIN_LIBRARIES_TRUE@libnekoldap_la_CFLAGS = -I$(top_srcdir)/include
+@BUILTIN_LIBRARIES_FALSE@lib_LTLIBRARIES = libnekoldap.la
+@BUILTIN_LIBRARIES_FALSE@libnekoldap_la_SOURCES = nekoldap.c
 all: all-am
 
 .SUFFIXES:
@@ -244,7 +253,7 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libnekoldap.la: $(libnekoldap_la_OBJECTS) $(libnekoldap_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libnekoldap_la_OBJECTS) $(libnekoldap_la_LIBADD) $(LIBS)
+	$(libnekoldap_la_LINK) $(am_libnekoldap_la_rpath) $(libnekoldap_la_OBJECTS) $(libnekoldap_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -252,7 +261,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nekoldap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnekoldap_la-nekoldap.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -274,6 +283,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+libnekoldap_la-nekoldap.lo: nekoldap.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnekoldap_la_CFLAGS) $(CFLAGS) -MT libnekoldap_la-nekoldap.lo -MD -MP -MF $(DEPDIR)/libnekoldap_la-nekoldap.Tpo -c -o libnekoldap_la-nekoldap.lo `test -f 'nekoldap.c' || echo '$(srcdir)/'`nekoldap.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libnekoldap_la-nekoldap.Tpo $(DEPDIR)/libnekoldap_la-nekoldap.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='nekoldap.c' object='libnekoldap_la-nekoldap.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libnekoldap_la_CFLAGS) $(CFLAGS) -c -o libnekoldap_la-nekoldap.lo `test -f 'nekoldap.c' || echo '$(srcdir)/'`nekoldap.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -357,7 +373,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) all-local
 installdirs:
 	for dir in "$(DESTDIR)$(libdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -447,20 +463,37 @@ uninstall-am: uninstall-libLTLIBRARIES
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libLTLIBRARIES clean-libtool ctags distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+.PHONY: CTAGS GTAGS all all-am all-local check check-am clean \
+	clean-generic clean-libLTLIBRARIES clean-libtool ctags \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-libLTLIBRARIES install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-libLTLIBRARIES
 
+
+@BUILTIN_LIBRARIES_TRUE@all-local: nekoldap.ndll haxelib
+
+@BUILTIN_LIBRARIES_TRUE@nekoldap.o: nekoldap.c
+@BUILTIN_LIBRARIES_TRUE@	gcc -O0 -g3 -I${top_srcdir}/include -Wall -c -fmessage-length=0 -MMD -MP -o"$@" "$<"
+@BUILTIN_LIBRARIES_TRUE@nekoldap.ndll: nekoldap.o 
+@BUILTIN_LIBRARIES_TRUE@	$(CC) -shared -Wl,-soname=nekoldap -o "../nekoldap.ndll" nekoldap.o @STATIC_LIB_LDAP@ @STATIC_LIB_LBER@ @STATIC_LIB_SSL@ @STATIC_LIB_CRYPTO@ @STATIC_LIB_REGEX@ $(LIBS) 
+
+@BUILTIN_LIBRARIES_FALSE@all-local: all haxelib
+
+haxelib:
+	$(MKDIR_P) $(top_srcdir)/build_haxe/haxelib/nekoldap
+	$(MKDIR_P) $(top_srcdir)/build_haxe/haxelib/ndll/@HAXE_OS@
+	cp -u $(top_srcdir)/haxe/nekoldap/Ldap.hx $(top_srcdir)/build_haxe/haxelib/nekoldap/Ldap.hx
+	cp -u $(top_srcdir)/haxe/nekoldap/LdapException.hx $(top_srcdir)/build_haxe/haxelib/nekoldap/LdapException.hx
+	cp -u $(top_srcdir)/haxe/haxelib.xml $(top_srcdir)/build_haxe/haxelib/haxelib.xml
+	cp -u @HAXE_LIB_NAME@ $(top_srcdir)/build_haxe/haxelib/ndll/@HAXE_OS@/@HAXELIB_LIB_NAME@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
