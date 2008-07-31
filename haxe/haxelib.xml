@@ -1,5 +1,5 @@
 <project name="nekoldap" url="http://code.google.com/p/neko-ldap/" license="GPL">
     <user name="grebenshikov.n"/>
     <description>Neko and haxe wrapper for OpenLDAP library</description>
-    <version name="0.0.4">scope constants; nekoldap_get_entries returns null if there are not entries</version>
+    <version name="0.0.5">Linux version added. It depends on libldap-2.3.so.0, liblber-2.3.so.0, libssl.so.6, libcrypto.so.6, libc.so.6.</version>
 </project>
