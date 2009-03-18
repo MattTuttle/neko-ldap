@@ -41,7 +41,7 @@ class Ldap {
 	public static var LDAP_OPT_X_TLS_CRLCHECK = 0x600b;
 	public static var LDAP_OPT_X_TLS_CONNECT_CB = 0x600c;
 	public static var LDAP_OPT_X_TLS_CONNECT_ARG = 0x600d;
-	public static var LDAP_OPT_X_TLS_DHFILE =  = 0x600e;
+	public static var LDAP_OPT_X_TLS_DHFILE = 0x600e;
 
 	public static var LDAP_OPT_X_TLS_NEVER = 0;
 	public static var LDAP_OPT_X_TLS_HARD = 1;
@@ -49,9 +49,9 @@ class Ldap {
 	public static var LDAP_OPT_X_TLS_ALLOW = 3;
 	public static var LDAP_OPT_X_TLS_TRY = 4;
 
-	public static var LDAP_OPT_X_TLS_CRL_NONE = 0
-	public static var LDAP_OPT_X_TLS_CRL_PEER = 1
-	public static var LDAP_OPT_X_TLS_CRL_ALL = 2
+	public static var LDAP_OPT_X_TLS_CRL_NONE = 0;
+	public static var LDAP_OPT_X_TLS_CRL_PEER = 1;
+	public static var LDAP_OPT_X_TLS_CRL_ALL = 2;
 	
 	private var uri: String;
 	private var connection: Dynamic;
