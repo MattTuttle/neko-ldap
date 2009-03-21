@@ -26,32 +26,6 @@ class Ldap {
 	public static var SCOPE_CHILDREN = SCOPE_SUBORDINATE;
 	public static var SCOPE_DEFAULT = -1; /* OpenLDAP extension */
 
-	/* OpenLDAP TLS options */
-	public static var LDAP_OPT_X_TLS = 0x6000;
-	public static var LDAP_OPT_X_TLS_CTX = 0x6001;/* SSL CTX */
-	public static var LDAP_OPT_X_TLS_CACERTFILE = 0x6002;
-	public static var LDAP_OPT_X_TLS_CACERTDIR = 0x6003;
-	public static var LDAP_OPT_X_TLS_CERTFILE = 0x6004;
-	public static var LDAP_OPT_X_TLS_KEYFILE = 0x6005;
-	public static var LDAP_OPT_X_TLS_REQUIRE_CERT = 0x6006;
-
-	public static var LDAP_OPT_X_TLS_CIPHER_SUITE = 0x6008;
-	public static var LDAP_OPT_X_TLS_RANDOM_FILE = 0x6009;
-	public static var LDAP_OPT_X_TLS_SSL_CTX = 0x600a;
-	public static var LDAP_OPT_X_TLS_CRLCHECK = 0x600b;
-	public static var LDAP_OPT_X_TLS_CONNECT_CB = 0x600c;
-	public static var LDAP_OPT_X_TLS_CONNECT_ARG = 0x600d;
-	public static var LDAP_OPT_X_TLS_DHFILE = 0x600e;
-
-	public static var LDAP_OPT_X_TLS_NEVER = 0;
-	public static var LDAP_OPT_X_TLS_HARD = 1;
-	public static var LDAP_OPT_X_TLS_DEMAND = 2;
-	public static var LDAP_OPT_X_TLS_ALLOW = 3;
-	public static var LDAP_OPT_X_TLS_TRY = 4;
-
-	public static var LDAP_OPT_X_TLS_CRL_NONE = 0;
-	public static var LDAP_OPT_X_TLS_CRL_PEER = 1;
-	public static var LDAP_OPT_X_TLS_CRL_ALL = 2;
 	
 	private var uri: String;
 	private var connection: Dynamic;
