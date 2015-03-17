@@ -1,0 +1,1 @@
+Project aims to provide neko applications with openldap library functionality.
