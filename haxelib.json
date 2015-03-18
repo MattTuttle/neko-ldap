@@ -1,6 +1,6 @@
 {
 	"name": "ldap",
-	"license": "GPL",
+	"license": "LGPL",
 	"description": "Neko and haxe wrapper for OpenLDAP library",
 	"contributors": ["heardtheword", "grebenshikov.n"],
 	"releasenote": "Linux version added. It depends on libldap-2.3.so.0, liblber-2.3.so.0, libssl.so.6, libcrypto.so.6, libc.so.6.",

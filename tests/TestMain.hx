@@ -1,5 +1,3 @@
-import ldap.Ldap;
-
 class TestLdap extends haxe.unit.TestCase
 {
 	public function testConnect()

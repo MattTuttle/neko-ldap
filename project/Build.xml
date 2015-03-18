@@ -9,7 +9,7 @@
 
 	<files id="common">
 		<compilerflag value="-I/usr/local/include"/>
-		<file name="nekoldap.cpp"/>
+		<file name="ldap.cpp"/>
 	</files>
 
 	<set name="name_prefix" value="lib" if="iphone"/>

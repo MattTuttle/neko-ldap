@@ -1,4 +1,8 @@
-package ldap;
+#if neko
+import neko.Lib;
+#elseif cpp
+import cpp.Lib;
+#end
 
 class Ldap
 {
@@ -47,12 +51,11 @@ class Ldap
 	{
 		try
 		{
-			return nekoldap_set_option(connection, neko.Lib.haxeToNeko(option), neko.Lib.haxeToNeko(value));
+			return nekoldap_set_option(connection, option, value);
 		}
 		catch (e:Dynamic)
 		{
-			throw new LdapException(e, nekoldap_err2string(e));
-			return false;
+			throw nekoldap_err2string(e);
 		}
 	}
 
@@ -60,16 +63,15 @@ class Ldap
 	{
 		try
 		{
-			connection = nekoldap_connect(neko.Lib.haxeToNeko(uri));
-			nekoldap_bind(connection, neko.Lib.haxeToNeko(dn), neko.Lib.haxeToNeko(password));
+			connection = nekoldap_connect(uri);
+			nekoldap_bind(connection, dn, password);
 			connected = true;
 			return true;
 		}
 		catch (e:Dynamic)
 		{
 			connected = false;
-			throw new LdapException(e, nekoldap_err2string(e));
-			return false;
+			throw nekoldap_err2string(e);
 		}
 	}
 
@@ -82,28 +84,19 @@ class Ldap
 		}
 		catch (e:Dynamic)
 		{
-			throw new LdapException(e, nekoldap_err2string(e));
-			return false;
+			throw nekoldap_err2string(e);
 		}
 	}
-
 
 	public function search(baseDN:String, scope:Int, filter:String, attributes:Array<String>):Dynamic
 	{
 		try
 		{
-			return nekoldap_search(
-				connection,
-				neko.Lib.haxeToNeko(baseDN),
-				scope,
-				neko.Lib.haxeToNeko(filter),
-				neko.Lib.haxeToNeko(attributes),
-				0);
+			return nekoldap_search(connection, baseDN, scope, filter, attributes, 0);
 		}
 		catch (e:Dynamic)
 		{
-			throw new LdapException(e, nekoldap_err2string(e));
-			return false;
+			throw nekoldap_err2string(e);
 		}
 	}
 
@@ -115,7 +108,7 @@ class Ldap
 		}
 		catch (e:Dynamic)
 		{
-			throw new LdapException(e, nekoldap_err2string(e));
+			throw nekoldap_err2string(e);
 		}
 	}
 
@@ -123,20 +116,45 @@ class Ldap
 	{
 		try
 		{
-			return nekoldap_modify(connection, neko.Lib.haxeToNeko(dn), neko.Lib.haxeToNeko(modifications), MOD_REPLACE);
+			return nekoldap_modify(connection, dn, modifications, MOD_REPLACE);
 		}
 		catch (e:Dynamic)
 		{
-			throw new LdapException(e, nekoldap_err2string(e));
+			throw nekoldap_err2string(e);
 		}
 	}
 
-	private static var nekoldap_connect = neko.Lib.load("ldap", "nekoldap_connect", 1);
-	private static var nekoldap_set_option = neko.Lib.load("ldap", "nekoldap_set_option", 3);
-	private static var nekoldap_bind = neko.Lib.load("ldap", "nekoldap_bind", 3);
-	private static var nekoldap_search = neko.Lib.load("ldap", "nekoldap_search", -1);
-	private static var nekoldap_unbind = neko.Lib.load("ldap", "nekoldap_unbind", 1);
-	private static var nekoldap_get_entries = neko.Lib.load("ldap", "nekoldap_get_entries", 2);
-	private static var nekoldap_modify = neko.Lib.load("ldap", "nekoldap_modify", 4);
-	private static var nekoldap_err2string = neko.Lib.load("ldap", "nekoldap_err2string", 1);
+	private static function load(func:String, numArgs:Int):Dynamic
+	{
+		#if neko
+		if (!moduleInit)
+		{
+			// initialize neko
+			var init = Lib.load("ldap", "neko_init", 5);
+			if (init != null)
+			{
+				init(function(s) return new String(s), function(len:Int) { var r = []; if (len > 0) r[len - 1] = null; return r; }, null, true, false);
+			}
+			else
+			{
+				throw("Could not find NekoAPI interface.");
+			}
+			moduleInit = true;
+		}
+		#end
+		return Lib.load("ldap", func, numArgs);
+	}
+
+	private static var nekoldap_connect = load("nekoldap_connect", 1);
+	private static var nekoldap_set_option = load("nekoldap_set_option", 3);
+	private static var nekoldap_bind = load("nekoldap_bind", 3);
+	private static var nekoldap_search = load("nekoldap_search", -1);
+	private static var nekoldap_unbind = load("nekoldap_unbind", 1);
+	private static var nekoldap_get_entries = load("nekoldap_get_entries", 2);
+	private static var nekoldap_modify = load("nekoldap_modify", 4);
+	private static var nekoldap_err2string = load("nekoldap_err2string", 1);
+	#if neko
+	private static var moduleInit:Bool = false;
+	#end
+
 }
