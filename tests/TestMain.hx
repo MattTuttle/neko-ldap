@@ -2,9 +2,19 @@ class TestLdap extends haxe.unit.TestCase
 {
 	public function testConnect()
 	{
-		var ldap = new Ldap("ldap.forumsys.com");
-		ldap.bind("cn=read-only-admin,dc=example,dc=com", "password");
+		var ldap = new LDAP("ldap://whitepages.gatech.edu");
+		ldap.bind("", "");
+		assertTrue(ldap.connected);
 	}
+
+	public function testSearch()
+	{
+		var ldap = new LDAP("ldap://whitepages.gatech.edu");
+		ldap.bind("", "");
+		var result = ldap.search("dc=whitepages,dc=gatech,dc=edu", LDAP.SCOPE_SUB, "mail=jim.oconnor@oit.gatech.edu", []);
+		assertEquals("0700", result[0].postalAddress[0]);
+	}
+
 }
 
 class TestMain

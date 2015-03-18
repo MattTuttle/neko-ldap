@@ -4,7 +4,7 @@ import neko.Lib;
 import cpp.Lib;
 #end
 
-class Ldap
+class LDAP
 {
 
 	public static var SUCCESS = 0;
@@ -31,27 +31,21 @@ class Ldap
 	public static var SCOPE_DEFAULT = -1; /* OpenLDAP extension */
 
 
-	private var uri:String;
-	private var connection:Dynamic;
-	private var connected:Bool;
+	public var uri(default, null):String;
+	public var connected(default, null):Bool = false;
 
 	public function new(uri:String)
 	{
 		connected = false;
-		connection = null;
+		handle = null;
 		this.uri = uri;
-	}
-
-	public function isConnected()
-	{
-		return connected;
 	}
 
 	public function setOption(option:Int, value:Dynamic):Bool
 	{
 		try
 		{
-			return nekoldap_set_option(connection, option, value);
+			return nekoldap_set_option(handle, option, value);
 		}
 		catch (e:Dynamic)
 		{
@@ -63,8 +57,8 @@ class Ldap
 	{
 		try
 		{
-			connection = nekoldap_connect(uri);
-			nekoldap_bind(connection, dn, password);
+			handle = nekoldap_connect(uri);
+			nekoldap_bind(handle, dn, password);
 			connected = true;
 			return true;
 		}
@@ -80,7 +74,7 @@ class Ldap
 		try
 		{
 			connected = false;
-			return nekoldap_unbind(connection);
+			return nekoldap_unbind(handle);
 		}
 		catch (e:Dynamic)
 		{
@@ -88,11 +82,11 @@ class Ldap
 		}
 	}
 
-	public function search(baseDN:String, scope:Int, filter:String, attributes:Array<String>):Dynamic
+	public function search(baseDN:String, scope:Int, filter:String, attributes:Array<String>):Array<Dynamic>
 	{
 		try
 		{
-			return nekoldap_search(connection, baseDN, scope, filter, attributes, 0);
+			return nekoldap_search(handle, baseDN, scope, filter, attributes, 0);
 		}
 		catch (e:Dynamic)
 		{
@@ -100,23 +94,11 @@ class Ldap
 		}
 	}
 
-	public function getEntries(result:Dynamic)
+	public function modify(dn:String, modifications:Dynamic):Void
 	{
 		try
 		{
-			return nekoldap_get_entries(connection, result);
-		}
-		catch (e:Dynamic)
-		{
-			throw nekoldap_err2string(e);
-		}
-	}
-
-	public function modify(dn:String, modifications:Dynamic)
-	{
-		try
-		{
-			return nekoldap_modify(connection, dn, modifications, MOD_REPLACE);
+			return nekoldap_modify(handle, dn, modifications, MOD_REPLACE);
 		}
 		catch (e:Dynamic)
 		{
@@ -145,12 +127,13 @@ class Ldap
 		return Lib.load("ldap", func, numArgs);
 	}
 
+	private var handle:Dynamic;
+
 	private static var nekoldap_connect = load("nekoldap_connect", 1);
 	private static var nekoldap_set_option = load("nekoldap_set_option", 3);
 	private static var nekoldap_bind = load("nekoldap_bind", 3);
 	private static var nekoldap_search = load("nekoldap_search", -1);
 	private static var nekoldap_unbind = load("nekoldap_unbind", 1);
-	private static var nekoldap_get_entries = load("nekoldap_get_entries", 2);
 	private static var nekoldap_modify = load("nekoldap_modify", 4);
 	private static var nekoldap_err2string = load("nekoldap_err2string", 1);
 	#if neko
