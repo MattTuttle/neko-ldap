@@ -29,6 +29,7 @@
 		<ext value=".ndll" unless="mobile"/>
 		<files id="common"/>
 		<lib name="-lldap"/>
+		<lib name="-llber" if="linux"/>
 	</target>
 
 	<target id="default">

@@ -7,6 +7,7 @@
 #endif
 
 #include <hx/CFFI.h>
+#include <cstdlib>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -15,9 +16,12 @@
 
 #define LDAP_DEPRECATED 1
 #include <ldap.h>
+#include <lber.h>
 
 #define ERROR_MSG_SIZE 1024
 #define LDAP_ATTRS_MAX_SIZE 1024
+#define FALSE 0
+#define TRUE 1
 
 vkind k_ldap_pointer;
 
